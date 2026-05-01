@@ -1,0 +1,848 @@
+{
+  "info": {
+    "_postman_id": "5e1704ac-6635-4502-8bb1-d400c8b1c6a7",
+    "name": "Atividade 2026 - API de Pedidos",
+    "description": "Colecao completa para testar todos os endpoints da API de Pedidos.\n\nEndpoints disponiveis:\n\n- GET /api/pedidos (listar todos com paginacao)\n    \n- GET /api/pedidos/{id} (buscar por ID)\n    \n- POST /api/pedidos (criar pedido)\n    \n- PUT /api/pedidos/{id} (atualizar pedido)\n    \n- DELETE /api/pedidos/{id} (deletar pedido)\n    \n- PUT /api/pedidos/{id}/pagar (pagar pedido)\n    \n- PUT /api/pedidos/{id}/enviar (enviar pedido)\n    \n- PUT /api/pedidos/{id}/cancelar (cancelar pedido)\n    \n\nTipos de frete: TERRESTRE (5%), AEREO (10%), SEDEX (15%)  \nFluxo de estados: AGUARDANDO_PAGAMENTO -> PAGO -> ENVIADO  \nAGUARDANDO_PAGAMENTO -> CANCELADO",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53022050",
+    "_collection_link": "https://go.postman.co/collection/53022050-5e1704ac-6635-4502-8bb1-d400c8b1c6a7?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "CRUD - Pedidos",
+      "item": [
+        {
+          "name": "Listar Todos os Pedidos (paginado)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos?page=0&size=10&sort=id,asc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Numero da pagina (comeca em 0)"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "Quantidade de itens por pagina"
+                },
+                {
+                  "key": "sort",
+                  "value": "id,asc",
+                  "description": "Ordenacao (campo,direcao)"
+                }
+              ]
+            },
+            "description": "Retorna todos os pedidos com paginacao.\n\nParametros opcionais:\n- page: numero da pagina (padrao: 0)\n- size: itens por pagina (padrao: 20)\n- sort: campo e direcao de ordenacao"
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Pedidos (pagina 2, 5 itens)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos?page=1&size=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Retorna a segunda pagina com 5 itens por pagina."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Pedido por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "1"
+              ]
+            },
+            "description": "Busca um pedido especifico pelo seu ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Pedido Inexistente (erro 404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "999"
+              ]
+            },
+            "description": "Testa o cenario de buscar um pedido que nao existe. Deve retornar erro 404."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Pedido - Frete TERRESTRE",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Monitor Gamer LG UltraGear 27\",\n    \"valor\": 1800.00,\n    \"tipoFrete\": \"TERRESTRE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "Cria um novo pedido com frete TERRESTRE (5% do valor).\nValor esperado do frete: 1800 * 0.05 = R$ 90.00\nStatus inicial: AGUARDANDO_PAGAMENTO"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Pedido - Frete AEREO",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Cadeira Gamer ThunderX3\",\n    \"valor\": 2500.00,\n    \"tipoFrete\": \"AEREO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "Cria um novo pedido com frete AEREO (10% do valor).\nValor esperado do frete: 2500 * 0.10 = R$ 250.00\nStatus inicial: AGUARDANDO_PAGAMENTO"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Pedido - Frete SEDEX",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Webcam Logitech C920\",\n    \"valor\": 450.00,\n    \"tipoFrete\": \"SEDEX\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "Cria um novo pedido com frete SEDEX (15% do valor).\nValor esperado do frete: 450 * 0.15 = R$ 67.50\nStatus inicial: AGUARDANDO_PAGAMENTO"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Pedido - Sem Descricao (erro validacao)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"\",\n    \"valor\": 500.00,\n    \"tipoFrete\": \"TERRESTRE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "Testa validacao: descricao vazia. Deve retornar erro de validacao."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Pedido - Sem Valor (erro validacao)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Produto sem valor\",\n    \"valor\": null,\n    \"tipoFrete\": \"AEREO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "Testa validacao: valor nulo. Deve retornar erro de validacao."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Pedido - Valor Zero (erro validacao)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Produto com valor zero\",\n    \"valor\": 0.00,\n    \"tipoFrete\": \"TERRESTRE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "Testa validacao: valor zero (minimo e 0.01). Deve retornar erro de validacao."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Pedido - Sem Tipo de Frete (erro validacao)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Produto sem frete\",\n    \"valor\": 100.00,\n    \"tipoFrete\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "Testa validacao: tipo de frete vazio. Deve retornar erro de validacao."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Pedido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Smartphone Samsung Galaxy S24 Ultra\",\n    \"valor\": 5000.00,\n    \"tipoFrete\": \"SEDEX\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "1"
+              ]
+            },
+            "description": "Atualiza o pedido com ID 1. Altera descricao, valor e tipo de frete.\nNovo valor de frete esperado: 5000 * 0.15 = R$ 750.00 (SEDEX)"
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Pedido Inexistente (erro 404)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Produto inexistente\",\n    \"valor\": 100.00,\n    \"tipoFrete\": \"TERRESTRE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "999"
+              ]
+            },
+            "description": "Tenta atualizar um pedido que nao existe. Deve retornar erro 404."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Pedido",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "5"
+              ]
+            },
+            "description": "Deleta o pedido com ID 5. Deve retornar status 204 (No Content)."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Pedido Inexistente (erro 404)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "999"
+              ]
+            },
+            "description": "Tenta deletar um pedido que nao existe. Deve retornar erro 404."
+          },
+          "response": []
+        }
+      ],
+      "description": "Operacoes basicas de criacao, leitura, atualizacao e exclusao de pedidos."
+    },
+    {
+      "name": "State - Transicoes de Estado",
+      "item": [
+        {
+          "name": "Pagar Pedido (AGUARDANDO -> PAGO)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/1/pagar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "1",
+                "pagar"
+              ]
+            },
+            "description": "Realiza o pagamento do pedido 1.\nTransicao: AGUARDANDO_PAGAMENTO -> PAGO\n\nPre-condicao: pedido deve estar com status AGUARDANDO_PAGAMENTO"
+          },
+          "response": []
+        },
+        {
+          "name": "Enviar Pedido (PAGO -> ENVIADO)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/1/enviar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "1",
+                "enviar"
+              ]
+            },
+            "description": "Envia o pedido 1.\nTransicao: PAGO -> ENVIADO\n\nPre-condicao: pedido deve estar com status PAGO (execute 'Pagar Pedido' antes)"
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar Pedido (AGUARDANDO -> CANCELADO)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/2/cancelar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "2",
+                "cancelar"
+              ]
+            },
+            "description": "Cancela o pedido 2.\nTransicao: AGUARDANDO_PAGAMENTO -> CANCELADO\n\nPre-condicao: pedido deve estar com status AGUARDANDO_PAGAMENTO"
+          },
+          "response": []
+        },
+        {
+          "name": "Enviar sem Pagar (erro - transicao invalida)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/3/enviar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "3",
+                "enviar"
+              ]
+            },
+            "description": "Tenta enviar um pedido que ainda nao foi pago.\nDeve retornar erro: 'Pedido precisa ser pago antes de enviar'\n\nPre-condicao: pedido 3 deve estar com status AGUARDANDO_PAGAMENTO"
+          },
+          "response": []
+        },
+        {
+          "name": "Pagar Pedido ja Cancelado (erro - transicao invalida)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/2/pagar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "2",
+                "pagar"
+              ]
+            },
+            "description": "Tenta pagar um pedido que ja foi cancelado.\nDeve retornar erro de transicao invalida.\n\nPre-condicao: execute 'Cancelar Pedido' no pedido 2 antes"
+          },
+          "response": []
+        },
+        {
+          "name": "Enviar Pedido ja Enviado (erro - transicao invalida)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/1/enviar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "1",
+                "enviar"
+              ]
+            },
+            "description": "Tenta enviar um pedido que ja foi enviado.\nDeve retornar erro de transicao invalida.\n\nPre-condicao: execute 'Pagar Pedido' e 'Enviar Pedido' no pedido 1 antes"
+          },
+          "response": []
+        },
+        {
+          "name": "Pagar Pedido Inexistente (erro 404)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/999/pagar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "999",
+                "pagar"
+              ]
+            },
+            "description": "Tenta pagar um pedido que nao existe. Deve retornar erro 404."
+          },
+          "response": []
+        }
+      ],
+      "description": "Operacoes de transicao de estado dos pedidos usando o padrao State.\n\nFluxo valido:\n  AGUARDANDO_PAGAMENTO -> PAGO -> ENVIADO\n  AGUARDANDO_PAGAMENTO -> CANCELADO\n\nTransicoes invalidas:\n  AGUARDANDO_PAGAMENTO -> ENVIADO (precisa pagar primeiro)\n  PAGO -> PAGO (ja foi pago)\n  ENVIADO -> qualquer (estado final)\n  CANCELADO -> qualquer (estado final)"
+    },
+    {
+      "name": "Strategy - Tipos de Frete",
+      "item": [
+        {
+          "name": "Criar Pedido R$1000 - Frete TERRESTRE (R$50)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Teste Frete Terrestre - R$1000\",\n    \"valor\": 1000.00,\n    \"tipoFrete\": \"TERRESTRE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "Cria pedido de R$1000 com frete TERRESTRE.\nValor frete esperado: 1000 * 0.05 = R$ 50.00"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Pedido R$1000 - Frete AEREO (R$100)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Teste Frete Aereo - R$1000\",\n    \"valor\": 1000.00,\n    \"tipoFrete\": \"AEREO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "Cria pedido de R$1000 com frete AEREO.\nValor frete esperado: 1000 * 0.10 = R$ 100.00"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Pedido R$1000 - Frete SEDEX (R$150)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Teste Frete Sedex - R$1000\",\n    \"valor\": 1000.00,\n    \"tipoFrete\": \"SEDEX\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "Cria pedido de R$1000 com frete SEDEX.\nValor frete esperado: 1000 * 0.15 = R$ 150.00"
+          },
+          "response": []
+        }
+      ],
+      "description": "Testes focados na estrategia de calculo de frete.\n\nTipos disponiveis:\n- TERRESTRE: 5% do valor do pedido\n- AEREO: 10% do valor do pedido\n- SEDEX: 15% do valor do pedido"
+    },
+    {
+      "name": "Fluxo Completo",
+      "item": [
+        {
+          "name": "1. Criar Novo Pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descricao\": \"Console PlayStation 5\",\n    \"valor\": 3999.90,\n    \"tipoFrete\": \"SEDEX\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos"
+              ]
+            },
+            "description": "PASSO 1: Cria um novo pedido.\nAnote o ID retornado para usar nos proximos passos.\nStatus esperado: AGUARDANDO_PAGAMENTO\nValor frete esperado: 3999.90 * 0.15 = R$ 599.99 (SEDEX)"
+          },
+          "response": []
+        },
+        {
+          "name": "2. Verificar Pedido Criado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "6"
+              ]
+            },
+            "description": "PASSO 2: Verifica os dados do pedido criado.\nAjuste o ID conforme necessario.\nStatus esperado: AGUARDANDO_PAGAMENTO"
+          },
+          "response": []
+        },
+        {
+          "name": "3. Pagar o Pedido",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/6/pagar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "6",
+                "pagar"
+              ]
+            },
+            "description": "PASSO 3: Realiza o pagamento do pedido.\nAjuste o ID conforme necessario.\nStatus esperado: PAGO"
+          },
+          "response": []
+        },
+        {
+          "name": "4. Enviar o Pedido",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/6/enviar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "6",
+                "enviar"
+              ]
+            },
+            "description": "PASSO 4: Envia o pedido apos pagamento.\nAjuste o ID conforme necessario.\nStatus esperado: ENVIADO"
+          },
+          "response": []
+        },
+        {
+          "name": "5. Verificar Pedido Enviado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pedidos/6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pedidos",
+                "6"
+              ]
+            },
+            "description": "PASSO 5: Verifica o estado final do pedido.\nAjuste o ID conforme necessario.\nStatus esperado: ENVIADO"
+          },
+          "response": []
+        }
+      ],
+      "description": "Fluxo completo de um pedido: criar -> pagar -> enviar.  \nExecute as requisicoes na ordem numerada."
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}
